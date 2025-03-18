@@ -164,6 +164,8 @@ JAZZMIN_SETTINGS = {
         "auth": "fas fa-users-cog",
         "auth.Group": "fas fa-users",
         "users.CustomUser": "fas fa-user",
+        "users.Payment": "fas fa-money-bill-wave",
+        "users.Account": "fas fa-wallet",
         "pharmacy.Medicine": "fas fa-pills",
         "pharmacy.Order": "fas fa-shopping-cart",
         "pharmacy.Inventory": "fas fa-clipboard-list",

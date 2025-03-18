@@ -1,5 +1,5 @@
 from django.contrib import admin
-from users.models import CustomUser
+from users.models import CustomUser, Payment, Account
 
 # Register your models here.
 
@@ -36,14 +36,13 @@ class CustomUserAdmin(admin.ModelAdmin):
     change_user_password_template = None
     change_password_form = AdminPasswordChangeForm
     add_form_template = "admin/auth/user/add_form.html"
-    list_display = ["username", "role", "email", "date_joined"]
-    list_display = ("username", "email", "role", "is_staff")
+    list_display = ["username", "email", "date_joined"]
+    list_display = ("username", "email", "is_staff")
     list_filter = (
         "is_staff",
         "is_superuser",
         "is_active",
         "groups",
-        "role",
         "date_joined",
     )
     search_fields = ("username", "first_name", "last_name", "email")
@@ -63,7 +62,6 @@ class CustomUserAdmin(admin.ModelAdmin):
                     "first_name",
                     "last_name",
                     "gender",
-                    "role",
                     "email",
                     "profile",
                 )
@@ -262,3 +260,38 @@ class CustomUserAdmin(admin.ModelAdmin):
             request.POST = request.POST.copy()
             request.POST["_continue"] = 1
         return super().response_add(request, obj, post_url_continue)
+
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    list_display = ("user", "amount", "method", "reference", "created_at")
+    search_fields = ("user", "reference", "method")
+    list_filter = ("user", "method", "created_at")
+    ordering = ("-created_at",)
+    list_editable = ()
+
+    def has_change_permission(self, request, obj=...):
+        return False
+
+    def has_delete_permission(self, request, obj=...):
+        return False
+
+
+@admin.register(Account)
+class AccountAdmin(admin.ModelAdmin):
+    list_display = ("user", "balance", "created_at", "updated_at")
+    search_fields = (
+        "user",
+        "balance",
+    )
+    list_filter = ("user", "updated_at", "created_at")
+    ordering = ("-created_at",)
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=...):
+        return False
+
+    def has_change_permission(self, request, obj=...):
+        return False

@@ -1,5 +1,6 @@
 from django import forms
-from pharmacy.models import Order, Medicine, Payment
+from pharmacy.models import Order, Medicine
+from users.models import CustomUser
 
 
 class OrderForm(forms.ModelForm):
@@ -19,14 +20,11 @@ class OrderForm(forms.ModelForm):
                 "Not enough stock available for the requested quantity. "
                 f"Available quantity {medicine.stock}."
             )
-        return quantity
-
-    def clean_payment(self):
-        medicine: Medicine = self.cleaned_data.get("medicine")
-        quantity: int = self.cleaned_data.get("quantity")
-        order_price = medicine.price * quantity
-        transaction: Payment = self.cleaned_data.get("payment")
-        if transaction.amount < order_price:
+        user: CustomUser = self.cleaned_data.get("customer")
+        total_price = medicine.price * quantity
+        if user.account.balance < total_price:
             raise forms.ValidationError(
-                f"Payment is less than the order price by {order_price - transaction.amount}."
+                f"Customer's account balance is less by Ksh.{total_price - user.account.balance} "
+                "to place this order."
             )
+        return quantity

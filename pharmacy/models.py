@@ -138,9 +138,6 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
-    payment = models.OneToOneField(
-        "payment", on_delete=models.RESTRICT, help_text=_("Select payment made")
-    )
     status = models.CharField(
         max_length=50,
         choices=OrderStatus.choices(),
@@ -170,13 +167,31 @@ class Order(models.Model):
                 change=-self.quantity,
                 reason=Inventory.ChangeReason.INITIAL_SALE.value,
             ).save()
+            self.customer.account.balance -= self.total_price
         else:
             original = Order.objects.get(pk=self.pk)
             if original.quantity != self.quantity:
                 change = original.quantity - self.quantity
                 self.medicine.stock += change
 
+                payment_made = original.total_price
+                new_payment_required = self.total_price
+                change = new_payment_required - payment_made
+                if change > 0:
+                    # Customer needs to pay more
+                    if change > self.customer.account.balance:
+                        raise Exception(
+                            f"Customer's account balance is less by Ksh.{change - self.customer.account.balance} "
+                            "to place this order."
+                        )
+                    else:
+                        self.customer.account.balance -= change
+                else:
+                    # Refund customer
+                    self.customer.account.balance -= change  # -- results to +
+
                 self.medicine.save()
+                self.customer.account.save()
                 Inventory.objects.create(
                     medicine=self.medicine,
                     change=change,
@@ -228,41 +243,3 @@ class Inventory(models.Model):
 
     class Meta:
         verbose_name_plural = _("Inventories")
-
-
-class Payment(models.Model):
-    class PaymentMethod(str, Enum):
-        CASH = "Cash"
-        MPESA = "m-pesa"
-        BANK = "Bank"
-        OTHER = "Other"
-
-        @classmethod
-        def choices(cls):
-            return [(key.name, key.value) for key in cls]
-
-    amount = models.DecimalField(
-        max_digits=10, decimal_places=2, help_text=_("Transaction amount in Ksh")
-    )
-    method = models.CharField(
-        max_length=20,
-        choices=PaymentMethod.choices(),
-        default=PaymentMethod.MPESA.value,
-        help_text=_("Select means of payment"),
-    )
-    reference = models.CharField(
-        max_length=100, help_text=_("Transaction ID or -- for cash.")
-    )
-    updated_at = models.DateTimeField(
-        auto_now=True,
-        verbose_name=_("Updated At"),
-        help_text=_("The date and time when the order was last updated"),
-    )
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name=_("Created At"),
-        help_text=_("The date and time when the order was created"),
-    )
-
-    def __str__(self):
-        return f"Amount Ksh. {self.amount} via {self.method} (Ref: {self.reference})"

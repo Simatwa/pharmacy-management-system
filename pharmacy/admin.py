@@ -1,5 +1,5 @@
 from django.contrib import admin
-from pharmacy.models import Medicine, Order, Inventory, Payment
+from pharmacy.models import Medicine, Order, Inventory
 from pharmacy.forms import OrderForm
 from django.utils.html import format_html
 
@@ -11,6 +11,11 @@ class MedicineAdmin(admin.ModelAdmin):
     search_fields = ("name", "category")
     list_filter = ("category", "name", "stock", "price", "created_at")
     ordering = ("-created_at",)
+
+    fieldsets = (
+        (None, {"fields": ("name", "category", "description", "picture")}),
+        ("Stock & Price", {"fields": ("stock", "price")}),
+    )
 
 
 @admin.register(Order)
@@ -28,6 +33,16 @@ class OrderAdmin(admin.ModelAdmin):
     search_fields = ("customer__username", "medicine__name", "status")
     list_filter = ("status", "medicine", "customer", "created_at")
     ordering = ("-created_at",)
+    fieldsets = (
+        (None, {"fields": ("customer",)}),
+        ("Details", {"fields": ("medicine", "quantity", "prescription")}),
+        (
+            "Delivery",
+            {
+                "fields": ("status",),
+            },
+        ),
+    )
 
     def status_colored(self, obj):
         status = obj.status.title()
@@ -60,11 +75,3 @@ class InventoryAdmin(admin.ModelAdmin):
         "timestamp",
     )
     ordering = ("-timestamp",)
-
-
-@admin.register(Payment)
-class PaymentAdmin(admin.ModelAdmin):
-    list_display = ("amount", "method", "reference", "created_at", "updated_at")
-    search_fields = ("reference", "method")
-    list_filter = ("method", "created_at")
-    ordering = ("-created_at",)
