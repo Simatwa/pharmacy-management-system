@@ -197,7 +197,7 @@ JAZZMIN_UI_TWEAKS = {
     "sidebar_nav_child_indent": False,
     "sidebar_nav_compact_style": False,
     "sidebar_nav_legacy_style": False,
-    "sidebar_nav_flat_style": True,
+    "sidebar_nav_flat_style": False,
     "theme": "default",
     "dark_mode_theme": None,
     "button_classes": {
@@ -206,7 +206,7 @@ JAZZMIN_UI_TWEAKS = {
         "info": "btn-outline-info",
         "warning": "btn-outline-warning",
         "danger": "btn-outline-danger",
-        "success": "btn-outline-success",
+        "success": "btn-outline-success"
     },
-    "actions_sticky_top": False,
+    "actions_sticky_top": False
 }
