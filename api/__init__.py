@@ -6,9 +6,10 @@ import os
 import time
 from pathlib import Path
 
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Request, Response, Path as FPath
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from typing import Annotated
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pharmacy_ms.settings")
 import django
@@ -72,4 +73,12 @@ app.include_router(v1_router, prefix=api_prefix)
 app.mount("/d", app=WSGIMiddleware(WSGIHandler()), name="django")
 
 if FRONTEND_DIR:
+
+    @app.get("/{path}", name="React request hits here", include_in_schema=False)
+    def serve_react_app(path: str):
+        file_path = FRONTEND_DIR / "index.html"
+        if file_path.exists():
+            return Response(content=file_path.read_text(), media_type="text/html")
+        return Response(content="index.html not found", status_code=404)
+
     app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")

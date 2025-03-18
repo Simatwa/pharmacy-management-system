@@ -84,6 +84,7 @@ class CustomUser(AbstractUser):
 
     def save(self, *args, **kwargs):
         if not self.id:  # new entry
+            self.set_password(self.password)
             new_account = Account.objects.create()
             new_account.save()
             self.account = new_account

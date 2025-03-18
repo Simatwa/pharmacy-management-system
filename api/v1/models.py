@@ -49,6 +49,7 @@ class Profile(BaseModel):
     location: Optional[str] = None
     account_balance: float
     profile: Optional[Any] = None
+    is_staff: Optional[bool] = False
 
     model_config = {
         "json_schema_extra": {
@@ -60,6 +61,7 @@ class Profile(BaseModel):
                 "location": "Nairobi",
                 "account_balance": 1200.15,
                 "profile": "/media/profiles/johndoe.jpg",
+                "is_staff": False,
             }
         }
     }

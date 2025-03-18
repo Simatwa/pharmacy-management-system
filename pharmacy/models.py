@@ -8,7 +8,6 @@ from django.utils.translation import gettext_lazy as _
 
 from os import path
 from enum import Enum
-from django.contrib import messages
 
 # Create your models here.
 
@@ -21,10 +20,12 @@ def generate_document_filepath(instance: "Medicine", filename: str) -> str:
 class Medicine(models.Model):
 
     class MedicineCategory(str, Enum):
-        TABLET = "Tablet"
-        SYRUP = "Syrup"
-        INJECTION = "Injection"
-        OINTMENT = "Ointment"
+        ANTIBIOTICS = "Antibiotics"
+        PAIN_RELIEF = "Pain Relief"
+        FIRST_AID = "First Aid"
+        VITAMINS = "Vitamins"
+        SUPPLEMENTS = "Supplements"
+        COUGH_SYRUP = "Cough Syrup"
         OTHER = "Other"
 
         @classmethod
@@ -49,6 +50,7 @@ class Medicine(models.Model):
         max_length=50,
         choices=MedicineCategory.choices(),
         verbose_name=_("Category"),
+        default=MedicineCategory.OTHER.value,
         help_text=_("Select the category of the medicine"),
     )
     description = models.TextField(

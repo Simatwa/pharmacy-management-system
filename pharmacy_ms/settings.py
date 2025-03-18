@@ -46,7 +46,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    # "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -136,7 +136,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "users.CustomUser"
 
 
-FRONTEND_DIR = None  # BASE_DIR / "frontend/ready"
+FRONTEND_DIR = Path(
+    "/home/smartwa/Downloads/zip2/project/dist"
+)  # BASE_DIR / "frontend/ready"
 
 JAZZMIN_SETTINGS = {
     "show_ui_builder": True,
@@ -153,6 +155,11 @@ JAZZMIN_SETTINGS = {
         {
             "name": "Support",
             "url": "https://github.com/Simatwa/pharmacy-management-system/issues",
+            "new_window": True,
+        },
+        {
+            "name": "Index",
+            "url": "/",
             "new_window": True,
         },
         {"model": "pharmacy.Medicine"},

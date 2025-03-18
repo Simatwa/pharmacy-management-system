@@ -5,7 +5,8 @@ from users.models import CustomUser
 from pharmacy.models import Medicine, Order
 from pharmacy.exceptions import InsufficientBalanceError
 from pydantic import PositiveInt
-from django.contrib.auth.hashers import check_password
+
+# from django.contrib.auth.hashers import check_password
 from api.v1.utils import token_id, generate_token
 from api.v1.models import (
     TokenAuth,
@@ -60,7 +61,7 @@ def fetch_token(
         user = CustomUser.objects.get(
             username=form_data.username
         )  # Temporarily restrict to students only
-        if check_password(form_data.password, user.password):
+        if user.check_password(form_data.password):
             if user.token is None:
                 user.token = generate_token()
                 user.save()
@@ -215,7 +216,7 @@ def edit_an_order(
         )
 
 
-@router.delete("/delete/{order_id}", name="Delete an order")
+@router.delete("/order/{order_id}", name="Delete an order")
 def delete_an_order(
     order_id: Annotated[int, Path(description="Order id")],
     user: Annotated[CustomUser, Depends(get_user)],
@@ -243,7 +244,7 @@ def orders_placed(
 ) -> list[MedicineOrder]:
     # print(user.orders)
     orders_list = []
-    for order in Order.objects.filter(customer=user).all():
+    for order in Order.objects.filter(customer=user).order_by("-created_at").all():
         order.medicine_name = order.medicine.name
         orders_list.append(MedicineOrder.model_validate(order))
     return orders_list
