@@ -181,3 +181,4 @@ migrations
 /files/static/
 node_modules
 .bolt
+medicine
