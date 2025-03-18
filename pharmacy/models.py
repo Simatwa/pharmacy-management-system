@@ -35,6 +35,7 @@ class Medicine(models.Model):
         max_length=255,
         verbose_name=_("Medicine Name"),
         help_text=_("Full name of the medicine"),
+        unique=True,
     )
     short_name = models.CharField(
         max_length=20,
@@ -42,6 +43,7 @@ class Medicine(models.Model):
         blank=True,
         verbose_name=_("Abbreviated name"),
         help_text=_("Abbreviated name for the medicine"),
+        unique=True,
     )
     category = models.CharField(
         max_length=50,
@@ -119,6 +121,7 @@ class Order(models.Model):
         on_delete=models.CASCADE,
         verbose_name=_("Customer"),
         help_text=_("Select the customer who placed the order"),
+        related_name="orders",
     )
     medicine = models.ForeignKey(
         Medicine,
@@ -247,8 +250,9 @@ class Inventory(models.Model):
     )
 
     reason = models.CharField(
-        max_length=255,
+        max_length=50,
         choices=ChangeReason.choices(),
+        default=ChangeReason.INITIAL_STOCK,
         verbose_name=_("Reason"),
         help_text=_("Select reason for change"),
     )

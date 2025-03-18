@@ -136,7 +136,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "users.CustomUser"
 
 
-FRONTEND_DIR = BASE_DIR / "frontend/ready"
+FRONTEND_DIR = None  # BASE_DIR / "frontend/ready"
 
 JAZZMIN_SETTINGS = {
     "show_ui_builder": True,

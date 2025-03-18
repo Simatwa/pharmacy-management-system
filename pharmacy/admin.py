@@ -7,13 +7,24 @@ from django.utils.html import format_html
 # Register your models here.
 @admin.register(Medicine)
 class MedicineAdmin(admin.ModelAdmin):
-    list_display = ("name", "category", "price", "stock", "created_at", "updated_at")
-    search_fields = ("name", "category")
+    list_display = (
+        "name",
+        "short_name",
+        "category",
+        "price",
+        "stock",
+        "updated_at",
+        "created_at",
+    )
+    search_fields = ("name", "short_name", "category")
     list_filter = ("category", "name", "stock", "price", "created_at")
     ordering = ("-created_at",)
 
     fieldsets = (
-        (None, {"fields": ("name", "category", "description", "picture")}),
+        (
+            None,
+            {"fields": ("name", "short_name", "category", "description", "picture")},
+        ),
         ("Stock & Price", {"fields": ("stock", "price")}),
     )
 
