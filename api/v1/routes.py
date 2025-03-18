@@ -193,9 +193,16 @@ def edit_an_order(
         if target_order.customer == user:
             target_order.quantity = client_medicine_order.quantity
             target_order.save()
-            order_response = jsonable_encoder(target_order)
-            order_response["medicine_name"] = target_order.medicine.name
-            return MedicineOrder(**order_response)
+            return MedicineOrder(
+                id=target_order.id,
+                medicine_name=target_order.medicine.name,
+                quantity=target_order.quantity,
+                prescription=target_order.prescription,
+                total_price=target_order.total_price,
+                status=target_order.status,
+                updated_at=target_order.updated_at,
+                created_at=target_order.created_at,
+            )
         else:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -212,7 +219,7 @@ def edit_an_order(
 def delete_an_order(
     order_id: Annotated[int, Path(description="Order id")],
     user: Annotated[CustomUser, Depends(get_user)],
-) -> MedicineOrder:
+) -> Feedback:
     try:
         target_order = Order.objects.get(id=order_id)
         if target_order.customer == user:

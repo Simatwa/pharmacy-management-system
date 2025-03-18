@@ -46,6 +46,7 @@ class Profile(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     email: Optional[str] = None
+    location: Optional[str] = None
     account_balance: float
     profile: Optional[Any] = None
 
@@ -56,6 +57,7 @@ class Profile(BaseModel):
                 "first_name": "John",
                 "last_name": "Doe",
                 "email": "johndoe@example.com",
+                "location": "Nairobi",
                 "account_balance": 1200.15,
                 "profile": "/media/profiles/johndoe.jpg",
             }

@@ -49,6 +49,10 @@ class CustomUser(AbstractUser):
         default="O",
     )
 
+    location = models.CharField(
+        max_length=50, help_text=_("Current location address"), null=True, blank=True
+    )
+
     profile = models.ImageField(
         _("Profile Picture"),
         default="default/user.png",
