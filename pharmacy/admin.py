@@ -71,6 +71,7 @@ class InventoryAdmin(admin.ModelAdmin):
     search_fields = ("medicine", "reason")
     list_filter = (
         "medicine",
+        "medicine__stock",
         "reason",
         "timestamp",
     )

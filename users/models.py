@@ -124,7 +124,7 @@ class Payment(models.Model):
     )
 
     def __str__(self):
-        return f"Amount Ksh. {self.amount} via {self.method} (Ref: {self.reference})"
+        return f"Amount Ksh.{self.amount} via {self.method} (Ref: {self.reference})"
 
     def save(self, *args, **kwargs):
         if self.id:

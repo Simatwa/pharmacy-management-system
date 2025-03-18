@@ -1,11 +1,14 @@
 from django.db import models
 from users.models import CustomUser
+from pharmacy.exceptions import InsufficientBalanceError, PharmacyException
+
 
 # Create your models here.
 from django.utils.translation import gettext_lazy as _
 
 from os import path
 from enum import Enum
+from django.contrib import messages
 
 # Create your models here.
 
@@ -161,6 +164,11 @@ class Order(models.Model):
             raise ValueError("Not enough stock available for the requested quantity.")
         self.total_price = self.medicine.price * self.quantity
         if not self.id:  # Only log inventory change on creation
+            if self.customer.account.balance < self.total_price:
+                raise InsufficientBalanceError(
+                    f"Customer's account balance is less by Ksh.{self.total_price -self.customer.account.balance} "
+                    "to place this order"
+                )
             self.medicine.stock -= self.quantity
             Inventory.objects.create(
                 medicine=self.medicine,
@@ -168,6 +176,7 @@ class Order(models.Model):
                 reason=Inventory.ChangeReason.INITIAL_SALE.value,
             ).save()
             self.customer.account.balance -= self.total_price
+            self.customer.account.save()
         else:
             original = Order.objects.get(pk=self.pk)
             if original.quantity != self.quantity:
@@ -180,9 +189,9 @@ class Order(models.Model):
                 if change > 0:
                     # Customer needs to pay more
                     if change > self.customer.account.balance:
-                        raise Exception(
-                            f"Customer's account balance is less by Ksh.{change - self.customer.account.balance} "
-                            "to place this order."
+                        raise InsufficientBalanceError(
+                            f"Customer's account balance is less by Ksh.{self.total_price - self.customer.account.balance} "
+                            "to place this order"
                         )
                     else:
                         self.customer.account.balance -= change
@@ -198,6 +207,17 @@ class Order(models.Model):
                     reason=Inventory.ChangeReason.ORDER_QUANTITY_UPDATE.value,
                 ).save()
         super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        if self.status != self.OrderStatus.DELIVERED.value:
+            self.customer.account.balance += self.total_price
+            self.customer.account.save()
+            Inventory.objects.create(
+                medicine=self.medicine,
+                change=self.quantity,
+                reason=Inventory.ChangeReason.ORDER_QUANTITY_UPDATE.value,
+            ).save()
+        super().delete(*args, **kwargs)
 
     def __str__(self):
         return f"Order {self.id} by {self.customer.username}"
