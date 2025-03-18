@@ -107,7 +107,7 @@ class Medicine(models.Model):
 
 class Order(models.Model):
 
-    class OrderStatus(str, Enum):
+    class OrderStatus(Enum):
         PENDING = "Pending"
         PROCESSED = "Processed"
         DELIVERED = "Delivered"
@@ -166,13 +166,14 @@ class Order(models.Model):
         if self.medicine.stock < self.quantity:
             raise ValueError("Not enough stock available for the requested quantity.")
         self.total_price = self.medicine.price * self.quantity
-        if not self.id:  # Only log inventory change on creation
+        if not self.id:  # new
             if self.customer.account.balance < self.total_price:
                 raise InsufficientBalanceError(
                     f"Customer's account balance is less by Ksh.{self.total_price -self.customer.account.balance} "
                     "to place this order"
                 )
             self.medicine.stock -= self.quantity
+            self.medicine.save()
             Inventory.objects.create(
                 medicine=self.medicine,
                 change=-self.quantity,
@@ -180,12 +181,12 @@ class Order(models.Model):
             ).save()
             self.customer.account.balance -= self.total_price
             self.customer.account.save()
-        else:
+        else:  # update
             original = Order.objects.get(pk=self.pk)
             if original.quantity != self.quantity:
                 change = original.quantity - self.quantity
                 self.medicine.stock += change
-
+                self.medicine.save()
                 payment_made = original.total_price
                 new_payment_required = self.total_price
                 change = new_payment_required - payment_made
@@ -202,7 +203,6 @@ class Order(models.Model):
                     # Refund customer
                     self.customer.account.balance -= change  # -- results to +
 
-                self.medicine.save()
                 self.customer.account.save()
                 Inventory.objects.create(
                     medicine=self.medicine,
@@ -228,7 +228,7 @@ class Order(models.Model):
 
 class Inventory(models.Model):
 
-    class ChangeReason(str, Enum):
+    class ChangeReason(Enum):
         INITIAL_STOCK = "Initial stock"
         STOCK_UPDATE = "Stock update"
         INITIAL_SALE = "Initial sale"
@@ -236,7 +236,7 @@ class Inventory(models.Model):
 
         @classmethod
         def choices(cls):
-            return [(key.name, key.value) for key in cls]
+            return [(key.value, key.name) for key in cls]
 
     medicine = models.ForeignKey(
         Medicine,
@@ -252,9 +252,11 @@ class Inventory(models.Model):
     reason = models.CharField(
         max_length=50,
         choices=ChangeReason.choices(),
-        default=ChangeReason.INITIAL_STOCK,
+        default=ChangeReason.INITIAL_STOCK.value,
         verbose_name=_("Reason"),
         help_text=_("Select reason for change"),
+        null=False,
+        blank=False,
     )
     timestamp = models.DateTimeField(
         auto_now_add=True,
