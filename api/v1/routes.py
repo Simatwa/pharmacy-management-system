@@ -112,11 +112,11 @@ def medicine_available(
     if name:
         query = query.filter(name__icontains=name)
     if category:
-        query = query.filter(category=category)
+        query = query.filter(category=category.replace(" ", "_").upper())
     if short_name:
         query = query.filter(short_name__icontains=short_name)
     if price:
-        query = query.filter(price=price)
+        query = query.filter(price__lt=price)
     if offset >= 0:
         query = query.filter(id__gt=offset)
 

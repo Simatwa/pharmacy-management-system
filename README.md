@@ -100,7 +100,7 @@ python manage.py createsuperuser --username developer \
 Start the backend server:
 
 ```sh
-python -m api run api
+python -m fastapi run api
 ```
 
 The application will be available at [http://localhost:8000](http://localhost:8000).
