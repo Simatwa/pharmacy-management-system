@@ -136,9 +136,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "users.CustomUser"
 
 
-FRONTEND_DIR = Path(
-    "/home/smartwa/Downloads/zip2/project/dist"
-)  # BASE_DIR / "frontend/ready"
+FRONTEND_DIR = BASE_DIR / "frontend/dist.ready"
 
 JAZZMIN_SETTINGS = {
     "show_ui_builder": True,
