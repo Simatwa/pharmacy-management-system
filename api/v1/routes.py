@@ -107,7 +107,7 @@ def medicine_available(
     ] = 100,
     offset: Annotated[int, Query(description="Medicine id to offset from")] = -1,
 ) -> list[MedicineAvailable]:
-    query = Medicine.objects.all()
+    query = Medicine.objects.order_by("-created_at")
 
     if name:
         query = query.filter(name__icontains=name)
@@ -120,7 +120,7 @@ def medicine_available(
     if offset >= 0:
         query = query.filter(id__gt=offset)
 
-    query = query[:limit]
+    query = query.all()[:limit]
 
     return [MedicineAvailable(**jsonable_encoder(med)) for med in query]
 

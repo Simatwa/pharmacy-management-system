@@ -19,6 +19,7 @@ class MedicineAdmin(admin.ModelAdmin):
     search_fields = ("name", "short_name", "category")
     list_filter = ("category", "name", "stock", "price", "created_at")
     ordering = ("-created_at",)
+    list_editable= ("stock", )
 
     fieldsets = (
         (
