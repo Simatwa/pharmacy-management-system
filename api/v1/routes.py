@@ -112,7 +112,7 @@ def medicine_available(
     if name:
         query = query.filter(name__icontains=name)
     if category:
-        query = query.filter(category=category.replace(" ", "_").upper())
+        query = query.filter(category__icontains=category.replace(" ", "_"))
     if short_name:
         query = query.filter(short_name__icontains=short_name)
     if price:
