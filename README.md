@@ -108,6 +108,11 @@ The application will be available at [http://localhost:8000](http://localhost:80
 > [!TIP]
 > If using the frontend, build it separately from [frontend](frontend) and rename the output `dist` to `dist.ready`.
 
+
+## Acknowledge
+
+I appreciate Mrs. Grace's unwavering faith in my abilities to successfully complete this project according to specifications. Her financial support has been instrumental in bringing this idea to life.
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).

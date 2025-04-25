@@ -34,7 +34,7 @@ app = FastAPI(
     description=api_module_path.joinpath("README.md").read_text(),
     license_info={
         "name": "MIT License",
-        "url": "https://raw.githubusercontent.com/Simatwa/Assignment-Management-System/refs/heads/main/LICENSE",
+        "url": "https://raw.githubusercontent.com/Simatwa/pharmacy-management-system/refs/heads/main/LICENSE",
     },
     docs_url="/api/docs",
     redoc_url="/api/redoc",
